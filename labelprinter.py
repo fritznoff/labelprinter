@@ -16,9 +16,11 @@ class LabelPrinter(object):
 	def setPrinter(self, printerName):
 		availablePrinters = self.cupsConnection.getPrinters()
 		try:
-			self.printer = availablePrinters[printerName]
+			availablePrinters[printerName]
 		except KeyError:
 			raise ValueError("The printer with the name '" + printerName + "' is not available")
+		else:
+			self.printer = printerName
 
 	def renderImageFromText(self, text, font, fontSize):
 		thisFilePath = os.path.dirname(os.path.realpath(__file__))
@@ -45,21 +47,15 @@ class LabelPrinter(object):
 		(width, height) = image.size
 		output = ""
 		for y in xrange(height-1, -1, -1):
-			pixel = []
+			output = output + 'G' + chr((width/8)+4) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00)
 			for x in xrange(0, width/8):
 				pixelbyte = 0
 				for b in xrange(0, 8):
 					pixellocation = (x*8 + b, y)
 					thispixel = image.getpixel(pixellocation)
-					if thispixel:
-						thispixel = 0
-					else:
-						thispixel = 1
+					thispixel = 1 != thispixel
 					pixelbyte = pixelbyte + thispixel * (2 ** (7-b))
-				pixel.append(pixelbyte)
-			output = output + 'G' + chr((width/8)+4) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00)
-			for i in xrange(0,8):
-				output = output + chr(pixel[i])
+				output = output + chr(pixelbyte)
 		return output
 
 	def printLabel(self, text, font='Lato-Bold', fontSize=60):
@@ -67,5 +63,5 @@ class LabelPrinter(object):
 		tempFile = tempfile.NamedTemporaryFile()
 		tempFile.write(printSequence)
 		tempFile.file.flush()
-		self.cupsConnection.printFile(self.printer['printer-info'], tempFile.name, text, {})
+		self.cupsConnection.printFile(self.printer, tempFile.name, text, {})
 		tempFile.close()
