@@ -31,9 +31,7 @@ class LabelPrinter(object):
 		return image
 
 	def initstring(self):
-		output = ""
-		output = output + chr(0x1B) + '@' + chr(0x1B) + 'iS' + chr(0x1B) + 'iR' + chr(0x01)
-		return output
+		return chr(0x1B) + '@' + chr(0x1B) + 'iS' + chr(0x1B) + 'iR' + chr(0x01)
 
 	def linefeed(self, feed):
 		output = ""
@@ -45,30 +43,23 @@ class LabelPrinter(object):
 	def processimage(self, image):
 		image = image.rotate(270)
 		(width, height) = image.size
-
 		output = ""
-
 		for y in xrange(height-1, -1, -1):
 			pixel = []
-
 			for x in xrange(0, width/8):
-				#pack 8 pixels in byte
-				pixelbyte = 0 #string that holds binary data
-				for b in xrange(0, 8): #maybe change direction
+				pixelbyte = 0
+				for b in xrange(0, 8):
 					pixellocation = (x*8 + b, y)
 					thispixel = image.getpixel(pixellocation)
 					if thispixel:
 						thispixel = 0
 					else:
 						thispixel = 1
-					pixelbyte = pixelbyte + thispixel * (2 ** (7-b)) #build up binary string
-				pixel.append(pixelbyte) #convert to binary and append to pixel array
-
+					pixelbyte = pixelbyte + thispixel * (2 ** (7-b))
+				pixel.append(pixelbyte)
 			output = output + 'G' + chr((width/8)+4) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00)
-
-			for i in xrange(0,8): #maybe change direction
+			for i in xrange(0,8):
 				output = output + chr(pixel[i])
-
 		return output
 
 	def printLabel(self, text, font='Lato-Bold', fontSize=60):
