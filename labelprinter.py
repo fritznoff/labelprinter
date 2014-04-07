@@ -27,9 +27,10 @@ class LabelPrinter(object):
 		fontPath = os.path.join(thisFilePath, 'fonts', font + '.ttf')
 		imageFont = ImageFont.truetype(fontPath, fontSize, encoding='unic')
 		(width, height) = imageFont.getsize(text)
+		(x_offset, y_offset) = imageFont.getoffset(text)
 		image = Image.new('1', (width, 64), 1)
 		draw = ImageDraw.Draw(image)
-		draw.text((0,32-(height/2)), text, font=imageFont)
+		draw.text((0,32-(height/2) - y_offset), text, font=imageFont)
 		return image
 
 	def initstring(self):
