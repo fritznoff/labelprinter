@@ -34,29 +34,29 @@ class LabelPrinter(object):
 		return image
 
 	def initstring(self):
-		return chr(0x1B) + '@' + chr(0x1B) + 'iS' + chr(0x1B) + 'iR' + chr(0x01)
+		return b'\x1B' + b'@' + b'\x1B'+ b'iS' + b'\x1B' + b'iR' + b'\x01'
 
 	def linefeed(self, feed):
-		output = ""
-		for i in xrange(0, feed +1):
-			output = output + 'Z'
-		output = output + chr(0x1A)
+		output = b''
+		for i in range(0, feed + 1):
+			output = output + b'Z'
+		output = output + b'\x1A'
 		return output
 
 	def processimage(self, image):
 		image = image.rotate(270)
 		(width, height) = image.size
-		output = ""
-		for y in xrange(height-1, -1, -1):
-			output = output + 'G' + chr((width/8)+4) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00) + chr(0x00)
-			for x in xrange(0, width/8):
+		output = b''
+		for y in range(height-1, -1, -1):
+			output = output + b'G' + bytearray([(width//8)+4]) + b'\x00' + b'\x00' + b'\x00' + b'\x00' + b'\x00'
+			for x in range(0, width//8):
 				pixelbyte = 0
-				for b in xrange(0, 8):
+				for b in range(0, 8):
 					pixellocation = (x*8 + b, y)
 					thispixel = image.getpixel(pixellocation)
 					thispixel = 1 != thispixel
 					pixelbyte = pixelbyte + thispixel * (2 ** (7-b))
-				output = output + chr(pixelbyte)
+				output = output + bytearray([pixelbyte])
 		return output
 
 	def printLabel(self, text, font='Lato-Bold', fontSize=60):
