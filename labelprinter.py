@@ -1,4 +1,5 @@
-import os, tempfile
+import os
+import tempfile
 import cups
 from PIL import Image, ImageDraw, ImageFont
 
@@ -11,7 +12,6 @@ class LabelPrinter(object):
 
 		self.cupsConnection = cups.Connection()
 		self.setPrinter(printerName)
-
 
 	def setPrinter(self, printerName):
 		availablePrinters = self.cupsConnection.getPrinters()
@@ -30,7 +30,7 @@ class LabelPrinter(object):
 		(x_offset, y_offset) = imageFont.getoffset(text)
 		image = Image.new('1', (width, 64), 1)
 		draw = ImageDraw.Draw(image)
-		draw.text((0,32-(height/2) - y_offset), text, font=imageFont)
+		draw.text((0, 32-(height/2) - y_offset), text, font=imageFont)
 		return image
 
 	def initstring(self):
