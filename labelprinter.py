@@ -59,7 +59,7 @@ class LabelPrinter(object):
 				output = output + bytearray([pixelbyte])
 		return output
 
-	def printLabel(self, text, font='Lato-Bold', fontSize=60):
+	def printLabel(self, text, font, fontSize):
 		printSequence = self.initstring() + self.processimage(self.renderImageFromText(text, font, fontSize)) + self.linefeed(5)
 		tempFile = tempfile.NamedTemporaryFile()
 		tempFile.write(printSequence)
